@@ -1,0 +1,84 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Java / Kotlin class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+build/
+*/build/
+captures/
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# Kotlin
+.kotlin/
+
+# Local configuration (SDK paths, signing keys, etc.)
+local.properties
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+.navigation/
+.externalNativeBuild/
+.cxx/
+
+# Native debug symbols
+obj/
+
+# Build outputs
+*.hprof
+
+# Log files
+*.log
+
+# OS noise
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor backups / swap
+*~
+*.swp
+*.swo
+*.bak
+*.orig
+
+# CI / coverage
+.coverage/
+*.lcov
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Sensitive config commonly committed by mistake
+google-services.json
+firebase-config.json
+secrets.properties
+
+# Claude / AI tooling local state
+.claude/

@@ -1,0 +1,32 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Remotecontrol" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/m3_primary</item>
+        <item name="colorOnPrimary">@color/m3_on_primary</item>
+        <item name="colorPrimaryContainer">@color/m3_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/m3_on_primary_container</item>
+
+        <item name="colorSecondary">@color/m3_secondary</item>
+        <item name="colorOnSecondary">@color/m3_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/m3_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/m3_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/m3_tertiary</item>
+        <item name="colorOnTertiary">@color/m3_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/m3_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/m3_on_tertiary_container</item>
+
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Remotecontrol.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Remotecontrol.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Remotecontrol.BodySmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Remotecontrol.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Remotecontrol.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Remotecontrol.TitleSmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Remotecontrol.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Remotecontrol.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Remotecontrol.LabelSmall</item>
+
+        <item name="materialButtonStyle">@style/Widget.Remotecontrol.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.Remotecontrol.Button.Outlined</item>
+        <item name="borderlessButtonStyle">@style/Widget.Remotecontrol.Button.Text</item>
+    </style>
+</resources>

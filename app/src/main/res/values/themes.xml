@@ -1,0 +1,80 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Material 3 theme. M3 buttons / cards / chips / inputs all read from this palette,
+         so widgets pick up consistent colors instead of falling back to default purple. -->
+    <style name="Theme.Remotecontrol" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/m3_primary</item>
+        <item name="colorOnPrimary">@color/m3_on_primary</item>
+        <item name="colorPrimaryContainer">@color/m3_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/m3_on_primary_container</item>
+
+        <item name="colorSecondary">@color/m3_secondary</item>
+        <item name="colorOnSecondary">@color/m3_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/m3_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/m3_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/m3_tertiary</item>
+        <item name="colorOnTertiary">@color/m3_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/m3_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/m3_on_tertiary_container</item>
+
+        <!-- Larger global typography (M3 token scale). -->
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Remotecontrol.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Remotecontrol.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Remotecontrol.BodySmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Remotecontrol.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Remotecontrol.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Remotecontrol.TitleSmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Remotecontrol.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Remotecontrol.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Remotecontrol.LabelSmall</item>
+
+        <!-- Squared-off buttons (M3 default is a full pill — too rounded for this app). -->
+        <item name="materialButtonStyle">@style/Widget.Remotecontrol.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.Remotecontrol.Button.Outlined</item>
+        <item name="borderlessButtonStyle">@style/Widget.Remotecontrol.Button.Text</item>
+    </style>
+
+    <!-- Button shape overrides. cornerRadius applies to all four corners. -->
+    <style name="Widget.Remotecontrol.Button" parent="Widget.Material3.Button">
+        <item name="cornerRadius">6dp</item>
+    </style>
+    <style name="Widget.Remotecontrol.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">6dp</item>
+    </style>
+    <style name="Widget.Remotecontrol.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="cornerRadius">6dp</item>
+    </style>
+    <style name="Widget.Remotecontrol.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="cornerRadius">6dp</item>
+    </style>
+
+    <!-- M3 text appearance overrides (sizes only, parent keeps the M3 weight/letter spacing). -->
+    <style name="TextAppearance.Remotecontrol.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">17sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">19sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textSize">17sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">19sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">24sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="TextAppearance.Remotecontrol.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">13sp</item>
+    </style>
+</resources>

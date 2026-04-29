@@ -1,0 +1,13 @@
+# Module build output
+/build
+
+# Local module-level config that should never be committed
+google-services.json
+firebase-config.json
+secrets.properties
+
+# Signing material
+*.jks
+*.keystore
+keystore.properties
+signing.properties

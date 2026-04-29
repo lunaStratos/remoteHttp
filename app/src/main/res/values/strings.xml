@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">Remote Control</string>
+
+    <string name="devices">디바이스</string>
+    <string name="add_device">디바이스 추가</string>
+    <string name="device_name">디바이스 이름</string>
+    <string name="enter_device_name">디바이스 이름을 입력하세요</string>
+    <string name="rename">이름 변경</string>
+    <string name="delete">삭제</string>
+    <string name="cancel">취소</string>
+    <string name="save">저장</string>
+    <string name="confirm">확인</string>
+    <string name="run">실행</string>
+    <string name="btn_plus">＋</string>
+    <string name="btn_minus">－</string>
+    <string name="int_step">증감(Step)</string>
+    <string name="preset_label">버튼 라벨 (예: 온도)</string>
+    <string name="preset_value_v2">전송 값 (예: 1)</string>
+
+    <string name="add_status_query">상태조회 추가</string>
+    <string name="add_int_button">Int 버튼</string>
+    <string name="add_string_button">String 버튼</string>
+
+    <string name="status_query">상태조회</string>
+    <string name="int_command">Int 명령</string>
+    <string name="string_command">String 명령</string>
+
+    <string name="name">이름</string>
+    <string name="url">HTTP 주소</string>
+    <string name="method">메소드</string>
+    <string name="protocol">프로토콜</string>
+    <string name="protocol_http">HTTP</string>
+    <string name="protocol_ws">WebSocket</string>
+    <string name="headers">헤더</string>
+    <string name="add_header">헤더 추가</string>
+    <string name="header_key">키</string>
+    <string name="header_value">값</string>
+    <string name="interval_ms">조회 간격(ms)</string>
+    <string name="body_template">본문 템플릿 (값은 {{value}} 사용)</string>
+    <string name="ws_send_message">전송 메시지 (연결 시 1회 전송)</string>
+    <string name="response_path">응답 경로 (예: data.envelope.body.Telemetry.payload.F64)</string>
+    <string name="display_rules">표시 규칙 (조건부)</string>
+    <string name="add_rule">규칙 추가</string>
+    <string name="rule_label">라벨 (예: 온도)</string>
+    <string name="rule_match_path">매칭 경로 (예: data.node_id)</string>
+    <string name="rule_match_value">매칭 값 (예: asdf1233)</string>
+    <string name="rule_value_path">값 경로 (예: data.envelope.body.Telemetry.payload.F64)</string>
+    <string name="int_min">최소값</string>
+    <string name="int_max">최대값</string>
+    <string name="enter_int_value">정수 값을 입력하세요</string>
+    <string name="enter_string_value">문자열 값을 입력하세요</string>
+    <string name="preset_values">프리셋 값</string>
+    <string name="preset_value">값</string>
+    <string name="add_preset">프리셋 추가</string>
+    <string name="custom_input">직접 입력…</string>
+    <string name="select_preset">값 선택</string>
+
+    <string name="export_json">JSON 내보내기</string>
+    <string name="import_json">JSON 가져오기</string>
+    <string name="import_replace">전체 교체</string>
+    <string name="import_merge">병합 (id 기준)</string>
+    <string name="paste_json_here">JSON을 붙여넣으세요</string>
+    <string name="import_failed">JSON 형식이 올바르지 않습니다</string>
+    <string name="imported_count">디바이스 %1$d개를 가져왔습니다</string>
+
+    <string name="empty_devices">디바이스가 없습니다. 우측 하단의 + 버튼을 눌러 추가하세요.</string>
+    <string name="empty_items">아직 항목이 없습니다.</string>
+
+    <string name="last_result">최근 응답</string>
+    <string name="polling">조회 중…</string>
+    <string name="show_logs">로그 보기</string>
+    <string name="hide_logs">로그 숨기기</string>
+    <string name="settings">설정</string>
+    <string name="settings_section_import">JSON 가져오기</string>
+    <string name="settings_section_logs">로그성 정보</string>
+    <string name="settings_section_display">표시 설정</string>
+    <string name="hide_url">URL 안보기</string>
+    <string name="import_url_hint">JSON URL (예: https://example.com/devices.json)</string>
+    <string name="fetch_from_url">주소에서 가져오기</string>
+    <string name="fetch_failed">가져오기 실패</string>
+</resources>
