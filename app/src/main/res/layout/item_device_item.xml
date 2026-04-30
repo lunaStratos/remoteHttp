@@ -58,53 +58,43 @@
 
             <ImageButton
                 android:id="@+id/btnFavorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.Remotecontrol.IconButton"
                 android:src="@drawable/ic_star"
                 android:contentDescription="@string/favorite" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRun"
-                style="@style/Widget.Remotecontrol.Button.Tonal"
+                style="@style/Widget.Remotecontrol.Button.Tonal.Compact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="@string/run" />
 
             <ImageButton
                 android:id="@+id/btnPause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.Remotecontrol.IconButton"
+                android:layout_marginStart="2dp"
                 android:src="@android:drawable/ic_media_pause"
                 android:contentDescription="@string/pause"
                 android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/btnDuplicate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.Remotecontrol.IconButton"
+                android:layout_marginStart="2dp"
                 android:src="@android:drawable/ic_menu_set_as"
                 android:contentDescription="@string/copy_item" />
 
             <ImageButton
                 android:id="@+id/btnEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.Remotecontrol.IconButton"
+                android:layout_marginStart="2dp"
                 android:src="@android:drawable/ic_menu_edit"
                 android:contentDescription="@string/save" />
 
             <ImageButton
                 android:id="@+id/btnDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                style="@style/Widget.Remotecontrol.IconButton"
                 android:src="@android:drawable/ic_menu_delete"
                 android:contentDescription="@string/delete" />
         </LinearLayout>
@@ -121,35 +111,25 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDecrement"
-                style="@style/Widget.Remotecontrol.Button.Outlined"
+                style="@style/Widget.Remotecontrol.Button.Outlined.Compact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
-                android:minWidth="48dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
                 android:text="@string/btn_minus" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRunInt"
-                style="@style/Widget.Remotecontrol.Button.Tonal"
+                style="@style/Widget.Remotecontrol.Button.Tonal.Compact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/run" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnIncrement"
-                style="@style/Widget.Remotecontrol.Button.Outlined"
+                style="@style/Widget.Remotecontrol.Button.Outlined.Compact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:minWidth="48dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
                 android:text="@string/btn_plus" />
         </LinearLayout>
 

@@ -45,9 +45,7 @@
 
         <ImageButton
             android:id="@+id/btnMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            style="@style/Widget.Remotecontrol.IconButton"
             android:src="@android:drawable/ic_menu_more"
             android:contentDescription="@string/rename" />
     </LinearLayout>

@@ -110,9 +110,7 @@ class DeviceItemAdapter(
             b.itemTitle.text = "[$typeLabel] ${item.name}"
             b.itemSubtitle.text = subtitleFor(item)
 
-            val isCommand = item.type == ItemType.INT_COMMAND ||
-                item.type == ItemType.STRING_COMMAND
-            val shouldHide = isCommand && Settings.get(ctx).hideUrl
+            val shouldHide = Settings.get(ctx).hideUrl
             b.itemSubtitle.visibility = if (shouldHide) View.GONE else View.VISIBLE
 
             renderResult(item)
