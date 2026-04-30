@@ -65,6 +65,17 @@ class DeviceItemAdapter(
         applyFilter()
     }
 
+    /**
+     * Move a visible row without rebuilding the dataset — required during an active
+     * drag, since notifyDataSetChanged would cancel ItemTouchHelper's gesture.
+     */
+    fun moveVisible(from: Int, to: Int) {
+        if (from !in visible.indices || to !in visible.indices) return
+        val moved = visible.removeAt(from)
+        visible.add(to, moved)
+        notifyItemMoved(from, to)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun applyFilter() {
         visible.clear()

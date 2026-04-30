@@ -460,14 +460,19 @@ class DeviceDetailActivity : AppCompatActivity() {
         ): Boolean {
             val from = viewHolder.bindingAdapterPosition
             val to = target.bindingAdapterPosition
+            if (from < 0 || to < 0) return false
             val fromItem = adapter.rawAt(from) ?: return false
             val toItem = adapter.rawAt(to) ?: return false
+            // Visible rows are favorite-pinned, so a cross-group drag would persist
+            // an order the next sort just throws away. Refuse it instead of letting
+            // the card snap back.
+            if (fromItem.favorite != toItem.favorite) return false
             val srcFrom = device.items.indexOfFirst { it.id == fromItem.id }
             val srcTo = device.items.indexOfFirst { it.id == toItem.id }
             if (srcFrom < 0 || srcTo < 0) return false
             repo.reorderItems(device.id, srcFrom, srcTo)
             device = repo.get(device.id) ?: device
-            refresh()
+            adapter.moveVisible(from, to)
             return true
         }
 

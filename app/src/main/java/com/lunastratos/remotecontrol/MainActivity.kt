@@ -362,6 +362,7 @@ class MainActivity : AppCompatActivity() {
         ): Boolean {
             val from = viewHolder.bindingAdapterPosition
             val to = target.bindingAdapterPosition
+            if (from < 0 || to < 0) return false
             val src = repo.all()
             val fromItem = adapter.rawAt(from) ?: return false
             val toItem = adapter.rawAt(to) ?: return false
@@ -369,7 +370,7 @@ class MainActivity : AppCompatActivity() {
             val srcTo = src.indexOfFirst { it.id == toItem.id }
             if (srcFrom < 0 || srcTo < 0) return false
             repo.reorderDevices(srcFrom, srcTo)
-            refresh()
+            adapter.moveVisible(from, to)
             return true
         }
 
