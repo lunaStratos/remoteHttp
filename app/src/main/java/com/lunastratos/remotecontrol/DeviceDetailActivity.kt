@@ -429,7 +429,7 @@ class DeviceDetailActivity : AppCompatActivity() {
                 JsonPathUtil.extract(raw, rule.valuePath) ?: continue
             }
             val label = rule.label.ifBlank { rule.valuePath.ifBlank { "?" } }
-            cache[label] = value
+            cache[label] = if (rule.unit.isBlank()) value else "$value ${rule.unit}"
             matched = true
         }
         if (!matched) return null

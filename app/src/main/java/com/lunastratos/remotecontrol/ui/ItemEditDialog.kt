@@ -296,12 +296,14 @@ object ItemEditDialog {
                             label = rb.inputLabel.text?.toString()?.trim().orEmpty(),
                             matchPath = rb.inputMatchPath.text?.toString()?.trim().orEmpty(),
                             matchValue = rb.inputMatchValue.text?.toString()?.trim().orEmpty(),
-                            valuePath = rb.inputValuePath.text?.toString()?.trim().orEmpty()
+                            valuePath = rb.inputValuePath.text?.toString()?.trim().orEmpty(),
+                            unit = rb.inputUnit.text?.toString()?.trim().orEmpty()
                         )
                         if (rule.label.isNotEmpty() ||
                             rule.matchPath.isNotEmpty() ||
                             rule.matchValue.isNotEmpty() ||
-                            rule.valuePath.isNotEmpty()) {
+                            rule.valuePath.isNotEmpty() ||
+                            rule.unit.isNotEmpty()) {
                             wsRules.add(rule)
                         }
                     }
@@ -428,6 +430,7 @@ object ItemEditDialog {
         row.inputMatchPath.setText(rule.matchPath)
         row.inputMatchValue.setText(rule.matchValue)
         row.inputValuePath.setText(rule.valuePath)
+        row.inputUnit.setText(rule.unit)
         row.btnRemove.setOnClickListener {
             b.rulesContainer.removeView(row.root)
         }

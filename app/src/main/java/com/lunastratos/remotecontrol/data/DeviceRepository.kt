@@ -144,6 +144,7 @@ class DeviceRepository(context: Context) {
         return try {
             val type = object : TypeToken<List<Device>>() {}.type
             val incoming: List<Device> = gson.fromJson(json, type) ?: return -1
+            incoming.forEach { d -> d.items.forEach { it.normalize() } }
             if (!merge) {
                 devices.clear()
                 devices.addAll(incoming)
@@ -190,6 +191,16 @@ class DeviceRepository(context: Context) {
         mqttUsername = denull(mqttUsername)
         mqttPassword = denull(mqttPassword)
         modbusHost = denull(modbusHost)
+        // Imported JSON may omit list fields entirely; Gson leaves them null. Default to
+        // empty so callers can iterate without NPE.
+        @Suppress("SENSELESS_COMPARISON")
+        if (headers == null) headers = mutableListOf()
+        @Suppress("SENSELESS_COMPARISON")
+        if (wsRules == null) wsRules = mutableListOf()
+        @Suppress("SENSELESS_COMPARISON")
+        if (stringPresets == null) stringPresets = mutableListOf()
+        @Suppress("SENSELESS_COMPARISON")
+        if (macroSteps == null) macroSteps = mutableListOf()
     }
 
     private fun denull(s: String?): String = s ?: ""

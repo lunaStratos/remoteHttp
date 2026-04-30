@@ -56,7 +56,8 @@ data class WsRule(
     var label: String = "",
     var matchPath: String = "",
     var matchValue: String = "",
-    var valuePath: String = ""
+    var valuePath: String = "",
+    var unit: String = ""
 )
 
 data class DeviceItem(

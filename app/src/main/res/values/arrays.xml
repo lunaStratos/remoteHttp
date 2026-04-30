@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="unit_options" translatable="false">
+        <item>°C</item>
+        <item>°F</item>
+        <item>%</item>
+        <item>ppm</item>
+        <item>lux</item>
+        <item>kW</item>
+        <item>W</item>
+        <item>kWh</item>
+        <item>Wh</item>
+        <item>A</item>
+        <item>mA</item>
+        <item>V</item>
+        <item>kV</item>
+        <item>Pa</item>
+        <item>kPa</item>
+        <item>bar</item>
+        <item>psi</item>
+        <item>m³</item>
+        <item>m³/h</item>
+        <item>L</item>
+        <item>L/min</item>
+        <item>Hz</item>
+        <item>rpm</item>
+        <item>dB</item>
+    </string-array>
+</resources>
