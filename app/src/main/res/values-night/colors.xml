@@ -37,4 +37,7 @@
     <color name="conn_disconnected">#757575</color>
     <color name="conn_error">#EF9A9A</color>
     <color name="favorite_on">#F4B400</color>
+
+    <color name="item_card_stroke">#5F6368</color>
+    <color name="item_card_dragging">#1E3A5F</color>
 </resources>

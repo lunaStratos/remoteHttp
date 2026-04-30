@@ -12,6 +12,7 @@
     <string name="save">저장</string>
     <string name="confirm">확인</string>
     <string name="run">실행</string>
+    <string name="execution_done">실행완료</string>
     <string name="btn_plus">＋</string>
     <string name="btn_minus">－</string>
     <string name="int_step">증감(Step)</string>

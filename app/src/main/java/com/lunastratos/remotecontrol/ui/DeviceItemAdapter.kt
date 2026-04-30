@@ -275,11 +275,13 @@ class DeviceItemAdapter(
 
         private fun applyErrorStroke(error: Boolean) {
             val ctx = b.root.context
+            val density = ctx.resources.displayMetrics.density
             if (error) {
                 b.root.strokeColor = ContextCompat.getColor(ctx, R.color.status_error_stroke)
-                b.root.strokeWidth = (2 * ctx.resources.displayMetrics.density).toInt()
+                b.root.strokeWidth = (2 * density).toInt()
             } else {
-                b.root.strokeWidth = 0
+                b.root.strokeColor = ContextCompat.getColor(ctx, R.color.item_card_stroke)
+                b.root.strokeWidth = (1.5f * density).toInt()
             }
         }
 

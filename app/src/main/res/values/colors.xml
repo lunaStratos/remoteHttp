@@ -48,4 +48,8 @@
     <color name="conn_disconnected">#9E9E9E</color>
     <color name="conn_error">#E53935</color>
     <color name="favorite_on">#F4B400</color>
+
+    <!-- Device item card stroke — visible separator between list rows. -->
+    <color name="item_card_stroke">#BDBDBD</color>
+    <color name="item_card_dragging">#E3F2FD</color>
 </resources>

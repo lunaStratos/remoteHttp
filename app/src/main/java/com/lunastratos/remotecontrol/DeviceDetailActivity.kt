@@ -8,11 +8,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.google.android.material.card.MaterialCardView
 import com.lunastratos.remotecontrol.data.ConnectionState
 import com.lunastratos.remotecontrol.data.Device
 import com.lunastratos.remotecontrol.data.DeviceItem
@@ -220,6 +222,7 @@ class DeviceDetailActivity : AppCompatActivity() {
                 adapter.update(target)
             }
             recordResult(item, formatHttpResult(r.code, r.body))
+            Toast.makeText(this@DeviceDetailActivity, R.string.execution_done, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -283,6 +286,7 @@ class DeviceDetailActivity : AppCompatActivity() {
                 }
             }
             recordResult(item, formatHttpResult(r.code, r.body))
+            Toast.makeText(this@DeviceDetailActivity, R.string.execution_done, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -477,6 +481,24 @@ class DeviceDetailActivity : AppCompatActivity() {
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+            super.onSelectedChanged(viewHolder, actionState)
+            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                (viewHolder?.itemView as? MaterialCardView)?.setCardBackgroundColor(
+                    ContextCompat.getColor(this@DeviceDetailActivity, R.color.item_card_dragging)
+                )
+            }
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            super.clearView(recyclerView, viewHolder)
+            (viewHolder.itemView as? MaterialCardView)?.let { card ->
+                val typedValue = android.util.TypedValue()
+                theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
+                card.setCardBackgroundColor(typedValue.data)
+            }
+        }
     }
 
     /** Run [block] only when the lock is disengaged; otherwise prompt for the PIN. */
