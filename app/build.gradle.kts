@@ -51,6 +51,15 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.okhttp)
     implementation(libs.gson)
+    implementation(libs.paho.mqtt)
+    implementation(libs.j2mod) {
+        // j2mod pulls in jSerialComm for RTU/serial — we only use TCP, so the native
+        // libs would just bloat the apk and break some Android builds.
+        exclude(group = "com.fazecast", module = "jSerialComm")
+    }
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.zxing.core)
+    implementation(libs.androidx.work.runtime.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

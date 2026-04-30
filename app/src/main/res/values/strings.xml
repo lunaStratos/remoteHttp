@@ -7,6 +7,7 @@
     <string name="enter_device_name">디바이스 이름을 입력하세요</string>
     <string name="rename">이름 변경</string>
     <string name="delete">삭제</string>
+    <string name="duplicate">복제</string>
     <string name="cancel">취소</string>
     <string name="save">저장</string>
     <string name="confirm">확인</string>
@@ -20,10 +21,12 @@
     <string name="add_status_query">상태조회 추가</string>
     <string name="add_int_button">Int 버튼</string>
     <string name="add_string_button">String 버튼</string>
+    <string name="add_macro">매크로 추가</string>
 
     <string name="status_query">상태조회</string>
     <string name="int_command">Int 명령</string>
     <string name="string_command">String 명령</string>
+    <string name="macro">매크로</string>
 
     <string name="name">이름</string>
     <string name="url">HTTP 주소</string>
@@ -31,6 +34,19 @@
     <string name="protocol">프로토콜</string>
     <string name="protocol_http">HTTP</string>
     <string name="protocol_ws">WebSocket</string>
+    <string name="protocol_mqtt">MQTT</string>
+    <string name="protocol_modbus">Modbus</string>
+    <string name="mqtt_broker_url">브로커 URL (tcp://host:1883)</string>
+    <string name="mqtt_topic">토픽</string>
+    <string name="mqtt_qos">QoS (0/1/2)</string>
+    <string name="mqtt_username">사용자명 (선택)</string>
+    <string name="mqtt_password">비밀번호 (선택)</string>
+    <string name="mqtt_client_id">Client ID (선택)</string>
+    <string name="modbus_host">호스트 (host 또는 host:502)</string>
+    <string name="modbus_unit">Unit ID</string>
+    <string name="modbus_function">Function</string>
+    <string name="modbus_address">주소</string>
+    <string name="modbus_count">개수</string>
     <string name="headers">헤더</string>
     <string name="add_header">헤더 추가</string>
     <string name="header_key">키</string>
@@ -70,12 +86,99 @@
     <string name="polling">조회 중…</string>
     <string name="show_logs">로그 보기</string>
     <string name="hide_logs">로그 숨기기</string>
+    <string name="pause">일시정지</string>
+    <string name="resume">재개</string>
     <string name="settings">설정</string>
     <string name="settings_section_import">JSON 가져오기</string>
     <string name="settings_section_logs">로그성 정보</string>
     <string name="settings_section_display">표시 설정</string>
     <string name="hide_url">URL 안보기</string>
+    <string name="settings_section_theme">테마</string>
+    <string name="theme_system">시스템</string>
+    <string name="theme_light">라이트</string>
+    <string name="theme_dark">다크</string>
     <string name="import_url_hint">JSON URL (예: https://example.com/devices.json)</string>
     <string name="fetch_from_url">주소에서 가져오기</string>
     <string name="fetch_failed">가져오기 실패</string>
+
+    <!-- Range / step warnings (was inline literal in DeviceDetailActivity). -->
+    <string name="warn_int_min">최소값 %1$d 이상</string>
+    <string name="warn_int_max">최대값 %1$d 이하</string>
+    <string name="warn_at_min">최소값입니다</string>
+    <string name="warn_at_max">최대값입니다</string>
+
+    <!-- Item count subtitle on device row. -->
+    <string name="items_count">%1$d 항목</string>
+    <!-- Type label prefix for status query card title. -->
+    <string name="type_label_status">상태조회</string>
+
+    <!-- Search affordances on toolbars. -->
+    <string name="search">검색</string>
+    <string name="search_hint">이름·URL 검색</string>
+
+    <!-- Favorite toggle. -->
+    <string name="favorite">즐겨찾기</string>
+    <string name="favorite_off">즐겨찾기 해제</string>
+
+    <!-- Card actions. -->
+    <string name="copy_item">항목 복제</string>
+    <string name="reorder_handle">정렬 핸들</string>
+
+    <!-- Connection state dot. -->
+    <string name="conn_idle">대기</string>
+    <string name="conn_connecting">연결중</string>
+    <string name="conn_connected">연결됨</string>
+    <string name="conn_disconnected">끊김</string>
+    <string name="conn_error">오류</string>
+
+    <!-- Unit input. -->
+    <string name="unit_hint">단위 (예: °C, %, kW)</string>
+
+    <!-- Auth preset. -->
+    <string name="auth_section">인증 토큰 (Bearer 자동 갱신)</string>
+    <string name="auth_token_url">토큰 발급 URL (선택)</string>
+    <string name="auth_body">토큰 발급 본문 (form 또는 JSON)</string>
+    <string name="auth_token_path">토큰 응답 경로 (기본 access_token)</string>
+    <string name="auth_help">Authorization 헤더 값을 __auto__ 로 두면 토큰을 자동 주입합니다.</string>
+
+    <!-- TLS toggle. -->
+    <string name="settings_section_security">보안</string>
+    <string name="insecure_tls">자체서명 TLS 허용 (LAN 전용)</string>
+
+    <!-- Read-only lock. -->
+    <string name="settings_section_lock">읽기 전용 잠금</string>
+    <string name="read_only_pin_hint">PIN (4자리 이상). 비우면 사용 안 함</string>
+    <string name="read_only_engaged">잠금 활성화</string>
+    <string name="enter_pin">PIN을 입력하세요</string>
+    <string name="wrong_pin">PIN이 맞지 않습니다</string>
+    <string name="locked_action">잠금 상태입니다. PIN으로 해제하세요.</string>
+
+    <!-- Auto backup. -->
+    <string name="settings_section_backup">자동 백업</string>
+    <string name="auto_backup_hours_hint">자동 백업 주기(시간). 0 = 사용 안 함</string>
+    <string name="last_backup">마지막 백업: %1$s</string>
+    <string name="last_backup_never">자동 백업 기록 없음</string>
+
+    <!-- QR. -->
+    <string name="qr_share">QR 공유</string>
+    <string name="qr_scan">QR 스캔</string>
+    <string name="qr_scan_prompt">JSON URL이 적힌 QR을 스캔하세요</string>
+    <string name="qr_payload_too_large">데이터가 너무 커서 QR로 인코딩할 수 없습니다. URL 가져오기를 사용하세요.</string>
+
+    <!-- Macro. -->
+    <string name="macro_steps">매크로 단계</string>
+    <string name="add_macro_step">단계 추가</string>
+    <string name="macro_step_target">대상 항목</string>
+    <string name="macro_step_value">값 (선택, {{value}} 치환용)</string>
+    <string name="macro_step_delay">단계 후 지연(ms)</string>
+    <string name="macro_no_targets">먼저 다른 항목을 추가하세요.</string>
+
+    <!-- Widget. -->
+    <string name="widget_label">Remote Control 단축</string>
+    <string name="widget_pick_item">위젯에 표시할 항목 선택</string>
+    <string name="widget_no_items">먼저 항목을 추가한 뒤 위젯을 다시 배치하세요.</string>
+    <string name="widget_item_missing">항목이 삭제됨</string>
+
+    <!-- Misc errors. -->
+    <string name="protocol_invalid">이 프로토콜에서 지원되지 않는 동작입니다.</string>
 </resources>

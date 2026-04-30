@@ -13,12 +13,28 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- Top row: title block + Run (non-INT) + edit/delete icons. -->
+        <!-- Top row: drag handle + connection dot + title block + Run (non-INT) + edit/delete icons. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/dragHandle"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_drag_handle"
+                android:contentDescription="@string/reorder_handle" />
+
+            <View
+                android:id="@+id/connDot"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/dot_connection"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -40,12 +56,40 @@
                     android:textColor="?android:attr/textColorSecondary" />
             </LinearLayout>
 
+            <ImageButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_star"
+                android:contentDescription="@string/favorite" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRun"
                 style="@style/Widget.Remotecontrol.Button.Tonal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/run" />
+
+            <ImageButton
+                android:id="@+id/btnPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_pause"
+                android:contentDescription="@string/pause"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/btnDuplicate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_set_as"
+                android:contentDescription="@string/copy_item" />
 
             <ImageButton
                 android:id="@+id/btnEdit"

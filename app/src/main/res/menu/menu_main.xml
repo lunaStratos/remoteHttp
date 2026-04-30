@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_search"
+        android:title="@string/search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item
         android:id="@+id/action_export"
         android:title="@string/export_json"
         app:showAsAction="never" />
@@ -13,7 +20,23 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_qr_share"
+        android:title="@string/qr_share"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_qr_scan"
+        android:title="@string/qr_scan"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_lock_toggle"
+        android:title="@string/settings_section_lock"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/settings"
-        app:showAsAction="never" />
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="always" />
 </menu>

@@ -32,4 +32,20 @@
     <color name="m3_on_tertiary">#FFFFFF</color>
     <color name="m3_tertiary_container">#FED6F8</color>
     <color name="m3_on_tertiary_container">#2B122B</color>
+
+    <!-- HTTP status code text colors used by DeviceItemAdapter. -->
+    <color name="status_2xx">#2E7D32</color>
+    <color name="status_3xx">#616161</color>
+    <color name="status_4xx">#EF6C00</color>
+    <color name="status_5xx">#C62828</color>
+    <color name="status_error_stroke">#C62828</color>
+    <color name="status_time">#9E9E9E</color>
+
+    <!-- Connection state dot. -->
+    <color name="conn_idle">#9E9E9E</color>
+    <color name="conn_connecting">#FFA726</color>
+    <color name="conn_connected">#43A047</color>
+    <color name="conn_disconnected">#9E9E9E</color>
+    <color name="conn_error">#E53935</color>
+    <color name="favorite_on">#F4B400</color>
 </resources>

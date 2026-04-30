@@ -23,4 +23,18 @@
     <color name="m3_on_tertiary">#422741</color>
     <color name="m3_tertiary_container">#5A3D58</color>
     <color name="m3_on_tertiary_container">#FED6F8</color>
+
+    <color name="status_2xx">#81C784</color>
+    <color name="status_3xx">#BDBDBD</color>
+    <color name="status_4xx">#FFB74D</color>
+    <color name="status_5xx">#EF9A9A</color>
+    <color name="status_error_stroke">#EF9A9A</color>
+    <color name="status_time">#9E9E9E</color>
+
+    <color name="conn_idle">#757575</color>
+    <color name="conn_connecting">#FFB74D</color>
+    <color name="conn_connected">#81C784</color>
+    <color name="conn_disconnected">#757575</color>
+    <color name="conn_error">#EF9A9A</color>
+    <color name="favorite_on">#F4B400</color>
 </resources>

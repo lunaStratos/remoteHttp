@@ -2,6 +2,7 @@ package com.lunastratos.remotecontrol
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -9,8 +10,13 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import com.lunastratos.remotecontrol.data.Device
 import com.lunastratos.remotecontrol.data.DeviceRepository
 import com.lunastratos.remotecontrol.data.Settings
@@ -18,7 +24,9 @@ import com.lunastratos.remotecontrol.databinding.ActivityMainBinding
 import com.lunastratos.remotecontrol.databinding.DialogImportJsonBinding
 import com.lunastratos.remotecontrol.net.HttpExecutor
 import com.lunastratos.remotecontrol.ui.DeviceAdapter
+import com.lunastratos.remotecontrol.ui.QrShare
 import com.lunastratos.remotecontrol.ui.SimpleInputDialog
+import com.lunastratos.remotecontrol.work.AutoBackupWorker
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +34,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var repo: DeviceRepository
     private lateinit var adapter: DeviceAdapter
+    private lateinit var settings: Settings
+    private lateinit var itemTouchHelper: ItemTouchHelper
+
+    private val qrScanLauncher = registerForActivityResult(ScanContract()) { result ->
+        val text = result?.contents ?: return@registerForActivityResult
+        // Treat the scan as either a URL (fetch + import) or raw JSON (import directly).
+        if (text.startsWith("http://") || text.startsWith("https://")) {
+            settings.importUrl = text
+            fetchAndImport(text)
+        } else {
+            chooseImportMode(text)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,15 +55,24 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         repo = DeviceRepository.get(this)
+        settings = Settings.get(this)
+        HttpExecutor.bindSettings(settings)
 
         adapter = DeviceAdapter(
             onClick = { openDevice(it) },
-            onMore = { device, view -> showDeviceMenu(device, view) }
+            onMore = { device, view -> showDeviceMenu(device, view) },
+            onDragStart = { vh -> if (!settings.isLocked) itemTouchHelper.startDrag(vh) }
         )
         binding.devicesList.layoutManager = LinearLayoutManager(this)
         binding.devicesList.adapter = adapter
 
-        binding.fabAdd.setOnClickListener { promptCreateDevice() }
+        itemTouchHelper = ItemTouchHelper(reorderCallback)
+        itemTouchHelper.attachToRecyclerView(binding.devicesList)
+
+        binding.fabAdd.setOnClickListener { gateLock { promptCreateDevice() } }
+
+        // Schedule auto-backup according to current settings; cheap no-op when disabled.
+        AutoBackupWorker.reschedule(applicationContext)
     }
 
     override fun onResume() {
@@ -77,30 +107,34 @@ class MainActivity : AppCompatActivity() {
             setOnMenuItemClickListener { mi ->
                 when (mi.title) {
                     getString(R.string.rename) -> {
-                        SimpleInputDialog.showText(
-                            context = this@MainActivity,
-                            title = getString(R.string.rename),
-                            prefill = device.name
-                        ) { newName ->
-                            val trimmed = newName.trim()
-                            if (trimmed.isNotEmpty()) {
-                                device.name = trimmed
-                                repo.updateDevice(device)
-                                refresh()
+                        gateLock {
+                            SimpleInputDialog.showText(
+                                context = this@MainActivity,
+                                title = getString(R.string.rename),
+                                prefill = device.name
+                            ) { newName ->
+                                val trimmed = newName.trim()
+                                if (trimmed.isNotEmpty()) {
+                                    device.name = trimmed
+                                    repo.updateDevice(device)
+                                    refresh()
+                                }
                             }
                         }
                         true
                     }
                     getString(R.string.delete) -> {
-                        AlertDialog.Builder(this@MainActivity)
-                            .setTitle(device.name)
-                            .setMessage(R.string.delete)
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.delete) { _, _ ->
-                                repo.deleteDevice(device.id)
-                                refresh()
-                            }
-                            .show()
+                        gateLock {
+                            AlertDialog.Builder(this@MainActivity)
+                                .setTitle(device.name)
+                                .setMessage(R.string.delete)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.delete) { _, _ ->
+                                    repo.deleteDevice(device.id)
+                                    refresh()
+                                }
+                                .show()
+                        }
                         true
                     }
                     else -> false
@@ -117,13 +151,44 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as? SearchView
+        searchView?.queryHint = getString(R.string.search_hint)
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.setQuery(newText.orEmpty())
+                return true
+            }
+        })
+        // Lock toggle title flips with state so users see what tapping does.
+        menu.findItem(R.id.action_lock_toggle).title = getString(
+            if (settings.isLocked) R.string.read_only_engaged else R.string.settings_section_lock
+        )
         return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.action_lock_toggle).title = getString(
+            if (settings.isLocked) R.string.read_only_engaged else R.string.settings_section_lock
+        )
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_export -> { exportJson(); true }
             R.id.action_import -> { promptImportJson(); true }
+            R.id.action_qr_share -> { showQrShare(); true }
+            R.id.action_qr_scan -> {
+                qrScanLauncher.launch(ScanOptions().apply {
+                    setPrompt(getString(R.string.qr_scan_prompt))
+                    setOrientationLocked(false)
+                    setBeepEnabled(false)
+                })
+                true
+            }
+            R.id.action_lock_toggle -> { toggleLock(); true }
             R.id.action_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 true
@@ -152,9 +217,31 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun showQrShare() {
+        // QR caps out around ~2.9KB even at low EC; full device JSON exceeds this for any
+        // realistic install. Encode the user's stored import URL when present (so a peer can
+        // scan to fetch). Otherwise prompt them to paste a URL.
+        val url = settings.importUrl
+        if (url.isBlank()) {
+            SimpleInputDialog.showText(
+                context = this,
+                title = getString(R.string.qr_share),
+                hint = getString(R.string.import_url_hint)
+            ) { typed ->
+                val trimmed = typed.trim()
+                if (trimmed.isNotEmpty()) {
+                    settings.importUrl = trimmed
+                    QrShare.show(this, trimmed)
+                }
+            }
+        } else {
+            QrShare.show(this, url)
+        }
+    }
+
     private fun promptImportJson() {
         val view = DialogImportJsonBinding.inflate(layoutInflater)
-        val savedUrl = Settings.get(this).importUrl
+        val savedUrl = settings.importUrl
         if (savedUrl.isNotBlank()) view.inputUrl.setText(savedUrl)
 
         view.btnFetch.setOnClickListener {
@@ -168,6 +255,7 @@ class MainActivity : AppCompatActivity() {
                 view.btnFetch.text = getString(R.string.fetch_from_url)
                 if (r.success) {
                     view.inputJson.setText(r.body)
+                    settings.importUrl = url
                 } else {
                     Toast.makeText(
                         this@MainActivity,
@@ -190,7 +278,18 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun chooseImportMode(json: String) {
+    private fun fetchAndImport(url: String) {
+        lifecycleScope.launch {
+            val r = HttpExecutor.fetchText(url)
+            if (!r.success) {
+                Toast.makeText(this@MainActivity, R.string.fetch_failed, Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            chooseImportMode(r.body)
+        }
+    }
+
+    private fun chooseImportMode(json: String) = gateLock {
         AlertDialog.Builder(this)
             .setTitle(R.string.import_json)
             .setItems(
@@ -210,5 +309,70 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    private fun toggleLock() {
+        if (settings.readOnlyPin.isBlank()) {
+            Toast.makeText(this, R.string.settings, Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SettingsActivity::class.java))
+            return
+        }
+        if (settings.isLocked) {
+            SimpleInputDialog.showText(
+                context = this,
+                title = getString(R.string.enter_pin),
+                inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+            ) { pin ->
+                if (settings.unlock(pin)) {
+                    invalidateOptionsMenu()
+                } else {
+                    Toast.makeText(this, R.string.wrong_pin, Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            settings.readOnlyEngaged = true
+            invalidateOptionsMenu()
+        }
+    }
+
+    private fun gateLock(block: () -> Unit) {
+        if (!settings.isLocked) { block(); return }
+        SimpleInputDialog.showText(
+            context = this,
+            title = getString(R.string.enter_pin),
+            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD
+        ) { pin ->
+            if (settings.unlock(pin)) { block(); invalidateOptionsMenu() }
+            else Toast.makeText(this, R.string.wrong_pin, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val reorderCallback = object : ItemTouchHelper.Callback() {
+        override fun isItemViewSwipeEnabled() = false
+        override fun isLongPressDragEnabled() = false
+        override fun getMovementFlags(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int = makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            val from = viewHolder.bindingAdapterPosition
+            val to = target.bindingAdapterPosition
+            val src = repo.all()
+            val fromItem = adapter.rawAt(from) ?: return false
+            val toItem = adapter.rawAt(to) ?: return false
+            val srcFrom = src.indexOfFirst { it.id == fromItem.id }
+            val srcTo = src.indexOfFirst { it.id == toItem.id }
+            if (srcFrom < 0 || srcTo < 0) return false
+            repo.reorderDevices(srcFrom, srcTo)
+            refresh()
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
     }
 }

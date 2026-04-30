@@ -10,11 +10,14 @@ import com.lunastratos.remotecontrol.data.DeviceItem
 import com.lunastratos.remotecontrol.data.HttpHeader
 import com.lunastratos.remotecontrol.data.HttpMethod
 import com.lunastratos.remotecontrol.data.ItemType
+import com.lunastratos.remotecontrol.data.MacroStep
+import com.lunastratos.remotecontrol.data.ModbusFunction
 import com.lunastratos.remotecontrol.data.Protocol
 import com.lunastratos.remotecontrol.data.StringPreset
 import com.lunastratos.remotecontrol.data.WsRule
 import com.lunastratos.remotecontrol.databinding.DialogItemEditBinding
 import com.lunastratos.remotecontrol.databinding.RowHeaderBinding
+import com.lunastratos.remotecontrol.databinding.RowMacroStepBinding
 import com.lunastratos.remotecontrol.databinding.RowPresetBinding
 import com.lunastratos.remotecontrol.databinding.RowWsRuleBinding
 
@@ -24,63 +27,90 @@ object ItemEditDialog {
         context: Context,
         type: ItemType,
         existing: DeviceItem?,
+        macroTargets: List<DeviceItem> = emptyList(),
         onSave: (DeviceItem) -> Unit
     ) {
         val inflater = LayoutInflater.from(context)
         val b = DialogItemEditBinding.inflate(inflater)
 
-        // Method spinner
         val methods = HttpMethod.values().map { it.name }
         b.spinnerMethod.adapter = ArrayAdapter(
             context, android.R.layout.simple_spinner_dropdown_item, methods
         )
 
-        // Field visibility per type
-        when (type) {
-            ItemType.STATUS_QUERY -> {
-                b.protocolRow.visibility = View.VISIBLE
-                b.intervalLayout.visibility = View.VISIBLE
-                b.intRangeRow.visibility = View.GONE
-                b.bodyLayout.visibility = View.VISIBLE
-            }
-            ItemType.INT_COMMAND -> {
-                b.protocolRow.visibility = View.GONE
-                b.intervalLayout.visibility = View.GONE
-                b.intRangeRow.visibility = View.VISIBLE
-                b.bodyLayout.visibility = View.VISIBLE
-            }
-            ItemType.STRING_COMMAND -> {
-                b.protocolRow.visibility = View.GONE
-                b.intervalLayout.visibility = View.GONE
-                b.intRangeRow.visibility = View.GONE
-                b.bodyLayout.visibility = View.VISIBLE
-                b.presetsSection.visibility = View.VISIBLE
+        val functions = ModbusFunction.values()
+        b.spinnerModbusFunction.adapter = ArrayAdapter(
+            context,
+            android.R.layout.simple_spinner_dropdown_item,
+            functions.map { "FC${it.code} ${it.name}" }
+        )
+
+        val isMacro = type == ItemType.MACRO
+
+        b.protocolRow.visibility = if (isMacro) View.GONE else View.VISIBLE
+        b.radioWs.visibility = if (type == ItemType.STATUS_QUERY) View.VISIBLE else View.GONE
+        b.radioModbus.visibility = if (type == ItemType.STRING_COMMAND || isMacro) View.GONE else View.VISIBLE
+
+        b.intRangeRow.visibility = if (type == ItemType.INT_COMMAND) View.VISIBLE else View.GONE
+        b.presetsSection.visibility = if (type == ItemType.STRING_COMMAND) View.VISIBLE else View.GONE
+        b.macroSection.visibility = if (isMacro) View.VISIBLE else View.GONE
+
+        fun applyProtocolVisibility(protocol: Protocol) {
+            b.methodRow.visibility = View.GONE
+            b.intervalLayout.visibility = View.GONE
+            b.bodyLayout.visibility = View.GONE
+            b.responsePathLayout.visibility = View.GONE
+            b.rulesSection.visibility = View.GONE
+            b.mqttSection.visibility = View.GONE
+            b.modbusSection.visibility = View.GONE
+            b.authSection.visibility = View.GONE
+            if (isMacro) return
+            when (protocol) {
+                Protocol.HTTP -> {
+                    b.methodRow.visibility = View.VISIBLE
+                    b.bodyLayout.visibility = View.VISIBLE
+                    b.bodyLayout.hint = context.getString(R.string.body_template)
+                    b.authSection.visibility = View.VISIBLE
+                    if (type == ItemType.STATUS_QUERY) b.intervalLayout.visibility = View.VISIBLE
+                }
+                Protocol.WEBSOCKET -> {
+                    b.bodyLayout.visibility = View.VISIBLE
+                    b.bodyLayout.hint = context.getString(R.string.ws_send_message)
+                    b.responsePathLayout.visibility = View.VISIBLE
+                    b.rulesSection.visibility = View.VISIBLE
+                }
+                Protocol.MQTT -> {
+                    b.mqttSection.visibility = View.VISIBLE
+                    if (type == ItemType.STATUS_QUERY) {
+                        b.responsePathLayout.visibility = View.VISIBLE
+                        b.rulesSection.visibility = View.VISIBLE
+                    } else {
+                        b.bodyLayout.visibility = View.VISIBLE
+                        b.bodyLayout.hint = context.getString(R.string.body_template)
+                    }
+                }
+                Protocol.MODBUS -> {
+                    b.modbusSection.visibility = View.VISIBLE
+                    if (type == ItemType.STATUS_QUERY) b.intervalLayout.visibility = View.VISIBLE
+                }
             }
         }
 
-        // For STATUS_QUERY, the WebSocket option toggles HTTP-only fields off and reveals
-        // WS-specific inputs. The body field is reused as the WS subscribe payload.
-        val applyProtocolVisibility = { ws: Boolean ->
-            if (type == ItemType.STATUS_QUERY) {
-                val httpVisibility = if (ws) View.GONE else View.VISIBLE
-                b.methodRow.visibility = httpVisibility
-                b.intervalLayout.visibility = httpVisibility
-                b.bodyLayout.visibility = View.VISIBLE
-                b.bodyLayout.hint = context.getString(
-                    if (ws) R.string.ws_send_message else R.string.body_template
-                )
-                b.responsePathLayout.visibility = if (ws) View.VISIBLE else View.GONE
-                b.rulesSection.visibility = if (ws) View.VISIBLE else View.GONE
-            }
-        }
         b.protocolGroup.setOnCheckedChangeListener { _, checkedId ->
-            applyProtocolVisibility(checkedId == R.id.radioWs)
+            val protocol = when (checkedId) {
+                R.id.radioWs -> Protocol.WEBSOCKET
+                R.id.radioMqtt -> Protocol.MQTT
+                R.id.radioModbus -> Protocol.MODBUS
+                else -> Protocol.HTTP
+            }
+            applyProtocolVisibility(protocol)
         }
 
-        // Pre-fill values
         existing?.let {
             b.inputName.setText(it.name)
             b.inputUrl.setText(it.url)
+            b.inputUnit.setText(it.unit)
+            b.switchFavorite.isChecked = it.favorite
             b.spinnerMethod.setSelection(methods.indexOf(it.method.name).coerceAtLeast(0))
             b.inputInterval.setText(it.intervalMs.toString())
             b.inputBody.setText(it.bodyTemplate)
@@ -90,18 +120,45 @@ object ItemEditDialog {
             for (h in it.headers) addHeaderRow(inflater, b, h)
             for (p in it.stringPresets) addPresetRow(inflater, b, p)
             for (r in it.wsRules) addWsRuleRow(inflater, b, r)
+            for (s in it.macroSteps) addMacroRow(inflater, b, s, macroTargets)
             b.inputResponsePath.setText(it.responsePath)
-            if (it.protocol == Protocol.WEBSOCKET) {
-                b.radioWs.isChecked = true
-                applyProtocolVisibility(true)
+
+            b.inputAuthUrl.setText(it.authTokenUrl)
+            b.inputAuthBody.setText(it.authBody)
+            b.inputAuthPath.setText(it.authTokenPath)
+
+            b.inputMqttBroker.setText(it.mqttBrokerUrl)
+            b.inputMqttTopic.setText(it.mqttTopic)
+            b.inputMqttQos.setText(it.mqttQos.toString())
+            b.inputMqttClientId.setText(it.mqttClientId)
+            b.inputMqttUser.setText(it.mqttUsername)
+            b.inputMqttPass.setText(it.mqttPassword)
+
+            b.inputModbusHost.setText(it.modbusHost)
+            b.inputModbusUnit.setText(it.modbusUnitId.toString())
+            b.inputModbusAddr.setText(it.modbusAddress.toString())
+            b.inputModbusCount.setText(it.modbusCount.toString())
+            b.spinnerModbusFunction.setSelection(
+                functions.indexOf(it.modbusFunction).coerceAtLeast(0)
+            )
+
+            val radioId = when (it.protocol) {
+                Protocol.HTTP -> R.id.radioHttp
+                Protocol.WEBSOCKET -> R.id.radioWs
+                Protocol.MQTT -> R.id.radioMqtt
+                Protocol.MODBUS -> R.id.radioModbus
             }
+            b.protocolGroup.check(radioId)
+            applyProtocolVisibility(it.protocol)
         } ?: run {
-            // Reasonable defaults
             b.inputInterval.setText("5000")
+            b.inputMqttQos.setText("0")
+            b.inputModbusUnit.setText("1")
+            b.inputModbusAddr.setText("0")
+            b.inputModbusCount.setText("1")
+            b.inputAuthPath.setText("access_token")
             when (type) {
                 ItemType.STATUS_QUERY -> {
-                    // Pre-fill with the BACnet/Telemetry sample so users see a working
-                    // template instead of an empty form. They can clear or edit freely.
                     b.inputBody.setText(DEFAULT_WS_SUBSCRIBE)
                     b.inputResponsePath.setText(DEFAULT_RESPONSE_PATH)
                     addWsRuleRow(inflater, b, DEFAULT_WS_RULE)
@@ -113,7 +170,11 @@ object ItemEditDialog {
                 ItemType.STRING_COMMAND -> {
                     b.inputBody.setText("{\"value\": {{value}}}")
                 }
+                ItemType.MACRO -> {
+                    // No protocol fields apply.
+                }
             }
+            applyProtocolVisibility(Protocol.HTTP)
         }
 
         b.btnAddHeader.setOnClickListener {
@@ -125,11 +186,22 @@ object ItemEditDialog {
         b.btnAddRule.setOnClickListener {
             addWsRuleRow(inflater, b, WsRule())
         }
+        b.btnAddMacroStep.setOnClickListener {
+            if (macroTargets.isEmpty()) {
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.macro_no_targets)
+                    .setPositiveButton(R.string.confirm, null)
+                    .show()
+                return@setOnClickListener
+            }
+            addMacroRow(inflater, b, MacroStep(targetItemId = macroTargets.first().id), macroTargets)
+        }
 
         val title = when (type) {
             ItemType.STATUS_QUERY -> R.string.status_query
             ItemType.INT_COMMAND -> R.string.int_command
             ItemType.STRING_COMMAND -> R.string.string_command
+            ItemType.MACRO -> R.string.macro
         }
 
         AlertDialog.Builder(context)
@@ -139,7 +211,29 @@ object ItemEditDialog {
             .setPositiveButton(R.string.save) { _, _ ->
                 val name = b.inputName.text?.toString()?.trim().orEmpty()
                 val url = b.inputUrl.text?.toString()?.trim().orEmpty()
-                if (name.isEmpty() || url.isEmpty()) return@setPositiveButton
+                val unit = b.inputUnit.text?.toString()?.trim().orEmpty()
+                val favorite = b.switchFavorite.isChecked
+
+                val protocol = if (isMacro) Protocol.HTTP else when (b.protocolGroup.checkedRadioButtonId) {
+                    R.id.radioWs -> Protocol.WEBSOCKET
+                    R.id.radioMqtt -> Protocol.MQTT
+                    R.id.radioModbus -> Protocol.MODBUS
+                    else -> Protocol.HTTP
+                }
+
+                if (name.isEmpty()) return@setPositiveButton
+                if (!isMacro) {
+                    when (protocol) {
+                        Protocol.HTTP, Protocol.WEBSOCKET -> if (url.isEmpty()) return@setPositiveButton
+                        Protocol.MQTT -> {
+                            if (b.inputMqttBroker.text.isNullOrBlank()) return@setPositiveButton
+                            if (b.inputMqttTopic.text.isNullOrBlank()) return@setPositiveButton
+                        }
+                        Protocol.MODBUS -> {
+                            if (b.inputModbusHost.text.isNullOrBlank()) return@setPositiveButton
+                        }
+                    }
+                }
 
                 val method = HttpMethod.valueOf(b.spinnerMethod.selectedItem.toString())
                 val interval = b.inputInterval.text?.toString()?.toLongOrNull() ?: 5000L
@@ -148,12 +242,27 @@ object ItemEditDialog {
                 val intMax = b.inputIntMax.text?.toString()?.toIntOrNull()
                 val intStep = b.inputIntStep.text?.toString()?.toIntOrNull()
                     ?.takeIf { it != 0 } ?: 1
-                val protocol = if (type == ItemType.STATUS_QUERY && b.radioWs.isChecked) {
-                    Protocol.WEBSOCKET
-                } else {
-                    Protocol.HTTP
-                }
                 val responsePath = b.inputResponsePath.text?.toString()?.trim().orEmpty()
+
+                val authUrl = b.inputAuthUrl.text?.toString()?.trim().orEmpty()
+                val authBody = b.inputAuthBody.text?.toString().orEmpty()
+                val authPath = b.inputAuthPath.text?.toString()?.trim()?.ifBlank { "access_token" } ?: "access_token"
+
+                val mqttBroker = b.inputMqttBroker.text?.toString()?.trim().orEmpty()
+                val mqttTopic = b.inputMqttTopic.text?.toString()?.trim().orEmpty()
+                val mqttQos = (b.inputMqttQos.text?.toString()?.toIntOrNull() ?: 0).coerceIn(0, 2)
+                val mqttClientId = b.inputMqttClientId.text?.toString()?.trim().orEmpty()
+                val mqttUser = b.inputMqttUser.text?.toString().orEmpty()
+                val mqttPass = b.inputMqttPass.text?.toString().orEmpty()
+
+                val modbusHost = b.inputModbusHost.text?.toString()?.trim().orEmpty()
+                val modbusUnit = b.inputModbusUnit.text?.toString()?.toIntOrNull() ?: 1
+                val modbusAddr = b.inputModbusAddr.text?.toString()?.toIntOrNull() ?: 0
+                val modbusCount = (b.inputModbusCount.text?.toString()?.toIntOrNull() ?: 1)
+                    .coerceAtLeast(1)
+                val modbusFn = functions[
+                    b.spinnerModbusFunction.selectedItemPosition.coerceIn(0, functions.size - 1)
+                ]
 
                 val headers = mutableListOf<HttpHeader>()
                 for (i in 0 until b.headersContainer.childCount) {
@@ -169,8 +278,6 @@ object ItemEditDialog {
                         val rowBinding = RowPresetBinding.bind(b.presetsContainer.getChildAt(i))
                         val label = rowBinding.inputLabel.text?.toString()?.trim().orEmpty()
                         val value = rowBinding.inputValue.text?.toString().orEmpty()
-                        // Drop fully-empty rows. If the user filled only one side, keep the
-                        // row using the filled side as both label and value.
                         if (label.isEmpty() && value.isEmpty()) continue
                         presets.add(
                             StringPreset(
@@ -191,13 +298,26 @@ object ItemEditDialog {
                             matchValue = rb.inputMatchValue.text?.toString()?.trim().orEmpty(),
                             valuePath = rb.inputValuePath.text?.toString()?.trim().orEmpty()
                         )
-                        // Drop fully-empty rows so users can leave stray inputs without saving them.
                         if (rule.label.isNotEmpty() ||
                             rule.matchPath.isNotEmpty() ||
                             rule.matchValue.isNotEmpty() ||
                             rule.valuePath.isNotEmpty()) {
                             wsRules.add(rule)
                         }
+                    }
+                }
+
+                val macroSteps = mutableListOf<MacroStep>()
+                if (isMacro) {
+                    for (i in 0 until b.macroContainer.childCount) {
+                        val rb = RowMacroStepBinding.bind(b.macroContainer.getChildAt(i))
+                        val targetIdx = rb.spinnerTarget.selectedItemPosition
+                        val target = macroTargets.getOrNull(targetIdx) ?: continue
+                        macroSteps.add(MacroStep(
+                            targetItemId = target.id,
+                            value = rb.inputValue.text?.toString().orEmpty(),
+                            delayMsAfter = rb.inputDelay.text?.toString()?.toLongOrNull() ?: 0L
+                        ))
                     }
                 }
 
@@ -214,7 +334,24 @@ object ItemEditDialog {
                     intMin = intMin,
                     intMax = intMax,
                     intStep = intStep,
-                    stringPresets = presets
+                    stringPresets = presets,
+                    macroSteps = macroSteps,
+                    unit = unit,
+                    favorite = favorite,
+                    authTokenUrl = authUrl,
+                    authBody = authBody,
+                    authTokenPath = authPath,
+                    mqttBrokerUrl = mqttBroker,
+                    mqttClientId = mqttClientId,
+                    mqttTopic = mqttTopic,
+                    mqttQos = mqttQos,
+                    mqttUsername = mqttUser,
+                    mqttPassword = mqttPass,
+                    modbusHost = modbusHost,
+                    modbusUnitId = modbusUnit,
+                    modbusFunction = modbusFn,
+                    modbusAddress = modbusAddr,
+                    modbusCount = modbusCount
                 )) ?: DeviceItem(
                     type = type,
                     name = name,
@@ -229,7 +366,24 @@ object ItemEditDialog {
                     intMin = intMin,
                     intMax = intMax,
                     intStep = intStep,
-                    stringPresets = presets
+                    stringPresets = presets,
+                    macroSteps = macroSteps,
+                    unit = unit,
+                    favorite = favorite,
+                    authTokenUrl = authUrl,
+                    authBody = authBody,
+                    authTokenPath = authPath,
+                    mqttBrokerUrl = mqttBroker,
+                    mqttClientId = mqttClientId,
+                    mqttTopic = mqttTopic,
+                    mqttQos = mqttQos,
+                    mqttUsername = mqttUser,
+                    mqttPassword = mqttPass,
+                    modbusHost = modbusHost,
+                    modbusUnitId = modbusUnit,
+                    modbusFunction = modbusFn,
+                    modbusAddress = modbusAddr,
+                    modbusCount = modbusCount
                 )
                 onSave(updated)
             }
@@ -280,7 +434,36 @@ object ItemEditDialog {
         b.rulesContainer.addView(row.root)
     }
 
-    /** Sample subscribe payload mirroring the documented BACnet/Telemetry stream. */
+    private fun addMacroRow(
+        inflater: LayoutInflater,
+        b: DialogItemEditBinding,
+        step: MacroStep,
+        targets: List<DeviceItem>
+    ) {
+        val row = RowMacroStepBinding.inflate(inflater, b.macroContainer, false)
+        val labels = targets.map { "[${typeShortLabel(it.type)}] ${it.name}" }
+        row.spinnerTarget.adapter = ArrayAdapter(
+            b.root.context,
+            android.R.layout.simple_spinner_dropdown_item,
+            labels
+        )
+        val sel = targets.indexOfFirst { it.id == step.targetItemId }.coerceAtLeast(0)
+        row.spinnerTarget.setSelection(sel)
+        row.inputValue.setText(step.value)
+        row.inputDelay.setText(step.delayMsAfter.toString())
+        row.btnRemove.setOnClickListener {
+            b.macroContainer.removeView(row.root)
+        }
+        b.macroContainer.addView(row.root)
+    }
+
+    private fun typeShortLabel(type: ItemType): String = when (type) {
+        ItemType.STATUS_QUERY -> "S"
+        ItemType.INT_COMMAND -> "I"
+        ItemType.STRING_COMMAND -> "T"
+        ItemType.MACRO -> "M"
+    }
+
     private val DEFAULT_WS_SUBSCRIBE = """
         {
           "type": "set_filter",
